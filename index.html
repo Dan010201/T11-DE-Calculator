@@ -120,20 +120,29 @@
   const valueTable = {
     "Brilliance Institute":  [0, 32, 32, 32, 32, 33, 32, 57, 58, 58, 57, 57, 70, 70, 70, 67],
     "Training Speed 1":  [0, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4],
+    
     "Relic HP": [0, 8, 10, 11, 13, 16, 19, 23, 27, 32, 38],
     "Relic Attack":   [0, 8, 10, 11, 13, 16, 19, 23, 27, 32, 38],
+    
     "Soldier Assault 1": [0, 12, 14, 16, 20, 23, 28, 34, 40, 48, 57],
     "Soldier Defense 1": [0, 12, 14, 16, 20, 23, 28, 34, 40, 48, 57],
+    
     "March Size": [0, 16, 19, 22, 26, 31, 37, 45, 54, 64, 76],
     "Hero Level 1": [0, 62, 131],
+    
     "Soldier Capacity 1": [0, 26, 34, 47, 71, 112],
     "Training Mastery": [0, 26, 34, 47, 71, 112],
+    
     "Healing Speed": [0, 44, 57, 78, 117, 186],
+    
     "Hero Assault 1": [0, 46, 55, 64, 78, 92, 110, 133, 160, 192, 228],
     "Hero Defense 1": [0, 46, 55, 64, 78, 92, 110, 133, 160, 192, 228],
+    
     "Healing Boost": [0, 70],
+    
     "Hero Assault 2": [0, 57, 69, 80, 97, 114, 137, 166, 200, 239, 285],
     "Hero Defense 2": [0, 57, 69, 80, 97, 114, 137, 166, 200, 239, 285],
+    
     "Soldier Level": [0, 288],
     "Hero Level 2": [0, 189, 321, 642]
   };
@@ -175,7 +184,7 @@
       const label = document.createElement("label"); 
       label.className="skill-label";
       const name = document.createElement("span"); name.textContent = skill;
-      const helper = document.createElement("span"); helper.className="muted"; helper.textContent="Pick current level";
+      const helper = document.createElement("span"); helper.className="muted"; helper.textContent="Select current level";
       label.append(name, helper);
 
       const select = document.createElement("select"); select.name=slugify(skill);
@@ -210,9 +219,9 @@
   // -------------------- Totals & Breakdown --------------------
 function updateTotals() {
   const selections = getSelections();
-
-  let t11Total = 0;
+  
   let brilTotal = 0;
+  let t11Total = 0;
   let grandTotal = 0;
 
   const tbody = document.getElementById("breakdown");
@@ -236,9 +245,13 @@ function updateTotals() {
     let maxDE = 0;
     for(let lvl = s.level + 1; lvl <= maxLevel; lvl++) maxDE += arr[lvl] || 0;
 
-    if(s.label === "Brilliance Institute") brilTotal += maxDE;
-    t11Total += t11DE;
-    grandTotal += maxDE;
+    // Handle totals
+    if (s.label === "Brilliance Institute") {
+      brilTotal += maxDE; // BI only affects its own total
+    } else {
+      t11Total += t11DE;   // all other skills count toward T11
+      grandTotal += maxDE; // and to max total
+    }
 
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${s.label}</td>
@@ -248,8 +261,9 @@ function updateTotals() {
     tbody.appendChild(tr);
   });
 
-  document.getElementById("T11Total").textContent = t11Total.toLocaleString();
+  // update display
   document.getElementById("BrilTotal").textContent = brilTotal.toLocaleString();
+  document.getElementById("T11Total").textContent = t11Total.toLocaleString();
   document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
 }
 

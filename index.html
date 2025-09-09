@@ -16,6 +16,7 @@
     --danger: #fb7185;
     --border: #273043;
     --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    --brilliance-highlight: orange;
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
@@ -34,6 +35,7 @@
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 18px 0 26px; }
   .card { background: linear-gradient(180deg, rgba(255,255,255,.02), transparent 60%), var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); transition: all 0.2s ease; }
   .highlight { border: 2px solid var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .highlight-brilliance { border: 2px solid var(--brilliance-highlight); box-shadow: 0 0 10px var(--brilliance-highlight); }
   .skill-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
   .skill-label span { font-weight: 600; }
   .muted { color: var(--muted); font-size: 12px; }
@@ -70,6 +72,7 @@
   </header>
 
   <div class="row" style="margin-top:8px; gap:8px;">
+    <button class="btn" id="copyLinkBtn">Copy Results Link</button>
     <button class="btn warn" id="resetBtn">Reset Levels</button>
     <button class="btn primary" id="toggleHighlightBtn">Toggle T11 Highlight</button>
   </div>
@@ -128,13 +131,9 @@
     "Healing Boost": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
     "Hero Assault 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
     "Hero Defense 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Soldier Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Hero Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0]
-
-    
+    "Soldier Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0]
   };
 
-  // Skills required for T11 and their caps
   const T11_REQUIREMENTS = {
     "Brilliance Institute":  15,
     "Training Speed 1":  1,
@@ -154,7 +153,6 @@
 
   let highlightOn = true;
   const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
-
   function valueFor(skill, level) { return Number(valueTable[skill][level] || 0); }
 
   // -------------------- Build Grid --------------------
@@ -165,8 +163,11 @@
       const card = document.createElement("div"); 
       card.className="card";
 
-      // Highlight T11 if needed
-      if(highlightOn && T11_REQUIREMENTS[skill]) card.classList.add("highlight");
+      // Highlight T11 if needed, Brilliance Institute orange
+      if(highlightOn && T11_REQUIREMENTS[skill]){
+        if(skill === "Brilliance Institute") card.classList.add("highlight-brilliance");
+        else card.classList.add("highlight");
+      }
 
       const label = document.createElement("label"); 
       label.className="skill-label";
@@ -178,7 +179,7 @@
       select.setAttribute("aria-label", skill+' level');
 
       const maxLevel = valueTable[skill].length - 1;
-      for(let lvl=1; lvl<=maxLevel; lvl++){
+      for(let lvl=0; lvl<=maxLevel; lvl++){
         const opt = document.createElement("option");
         opt.value = String(valueFor(skill,lvl));
         opt.dataset.level = String(lvl);
@@ -197,7 +198,7 @@
       return {
         key: sel.name,
         label: Object.keys(valueTable).find(k=>slugify(k)===sel.name)||sel.name,
-        level: Number(sel.selectedOptions[0]?.dataset.level||"1"),
+        level: Number(sel.selectedOptions[0]?.dataset.level||"0"),
         value: Number(sel.value||"0")
       };
     });
@@ -219,10 +220,14 @@
     document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
 
     let t11Total = 0;
+    let brilTotal = 0;
     selections.forEach(s=>{
       const required = T11_REQUIREMENTS[s.label];
+      const arr = valueTable[s.label];
+      if(s.label === "Brilliance Institute"){
+        for(let lvl=s.level+1; lvl<=arr.length-1; lvl++) brilTotal += arr[lvl] || 0;
+      }
       if(required){
-        const arr = valueTable[s.label];
         const start = s.level < required ? s.level + 1 : 0;
         for(let lvl=start; lvl<=required; lvl++){
           t11Total += arr[lvl] || 0;
@@ -230,26 +235,26 @@
       }
     });
     document.getElementById("T11Total").textContent = t11Total.toLocaleString();
+    document.getElementById("BrilTotal").textContent = brilTotal.toLocaleString();
   }
 
   // -------------------- Reset & URL --------------------
-  function resetTo(level = 0) { // default to 0 if no argument provided
-  document.querySelectorAll("#skillsGrid select").forEach(sel => {
-    const opt = Array.from(sel.options).find(o => Number(o.dataset.level) === level);
-    if (opt) sel.value = opt.value;
-  });
-  renderBreakdown();
-  updateTotals();
-  updateQueryString(false);
-}
-
+  function resetTo(level = 0) {
+    document.querySelectorAll("#skillsGrid select").forEach(sel => {
+      const opt = Array.from(sel.options).find(o => Number(o.dataset.level) === level);
+      if (opt) sel.value = opt.value;
+    });
+    renderBreakdown();
+    updateTotals();
+    updateQueryString(false);
+  }
 
   function updateQueryString(push=false){
     const params = new URLSearchParams();
     Object.keys(valueTable).forEach(skill=>{
       const sel = document.querySelector('select[name="'+slugify(skill)+'"]');
       if(!sel) return;
-      const lvl = sel.selectedOptions[0]?.dataset.level||"1";
+      const lvl = sel.selectedOptions[0]?.dataset.level||"0";
       params.set(slugify(skill), lvl);
     });
     const url = location.pathname + "?" + params.toString();
@@ -261,7 +266,7 @@
     Object.keys(valueTable).forEach(skill=>{
       const key = slugify(skill);
       const lvl = Number(params.get(key));
-      if(!lvl) return;
+      if(!lvl && lvl !== 0) return;
       const sel = document.querySelector('select[name="'+key+'"]');
       if(!sel) return;
       const opt = Array.from(sel.options).find(o=>Number(o.dataset.level)===lvl);
@@ -277,10 +282,15 @@
     updateTotals();
   });
 
-  // -------------------- Init --------------------
-  document.getElementById("resetBtn").addEventListener("click", ()=>resetTo(1));
+  // -------------------- Copy Link --------------------
+  document.getElementById("copyLinkBtn").addEventListener("click", ()=>{
+    navigator.clipboard.writeText(location.href).then(()=>alert("Link copied to clipboard!"));
+  });
 
-  buildSkillsGrid(); resetTo(1); applyQueryString(); renderBreakdown(); updateTotals(); updateQueryString(false);
+  // -------------------- Init --------------------
+  document.getElementById("resetBtn").addEventListener("click", ()=>resetTo(0));
+
+  buildSkillsGrid(); resetTo(0); applyQueryString(); renderBreakdown(); updateTotals(); updateQueryString(false);
 </script>
 </body>
 </html>

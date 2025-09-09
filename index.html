@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skill Resource Calculator</title>
+  <style>
+    :root {
+      --bg: #0f1220;
+      --card: #171a2b;
+      --muted: #9aa3b2;
+      --text: #e7ecf3;
+      --accent: #6ee7b7;
+      --accent-2: #8ab4ff;
+      --warn: #fbbf24;
+      --danger: #fb7185;
+      --border: #273043;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; padding: 24px;
+      background: radial-gradient(1200px 600px at 80% -20%, rgba(138,180,255,.15), transparent),
+                  radial-gradient(800px 400px at -10% 10%, rgba(110,231,183,.12), transparent),
+                  var(--bg);
+      color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      line-height: 1.45;
+    }
+    h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: .2px; }
+    .sub { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin: 18px 0 26px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.02), transparent 60%), var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .skill-label {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .skill-label span { font-weight: 600; }
+    .muted { color: var(--muted); font-size: 12px; }
+    select {
+      width: 100%; padding: 10px 12px; border-radius: 10px;
+      background: #0d1020; color: var(--text);
+      border: 1px solid var(--border);
+      outline: none;
+    }
+    select:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(138,180,255,.25); }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .btn {
+      appearance: none; border: 1px solid var(--border);
+      background: #0b0e1a; color: var(--text);
+      padding: 10px 14px; border-radius: 10px; cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .btn:hover { border-color: var(--accent-2); }
+    .btn.primary { background: linear-gradient(180deg, rgba(110,231,183,.2), transparent 40%), #0c1514; border-color: rgba(110,231,183,.35); }
+    .btn.warn { background: linear-gradient(180deg, rgba(251,191,36,.22), transparent 40%), #161309; border-color: rgba(251,191,36,.35); }
+    .btn.danger { background: linear-gradient(180deg, rgba(251,113,133,.22), transparent 40%), #1a0d11; border-color: rgba(251,113,133,.35); }
+    .result {
+      display: grid; gap: 12px; grid-template-columns: 1fr; margin-top: 8px;
+    }
+    .totals {
+      display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 14px;
+    }
+    .total-box { padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: #0b0f1d; }
+    .total-box h3 { margin: 0 0 6px; font-size: 16px; color: var(--muted); }
+    .total { font-size: 22px; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
+    th { color: var(--muted); font-weight: 600; font-size: 13px; letter-spacing: .3px; }
+    .foot { margin-top: 18px; color: var(--muted); font-size: 12px; }
+    details.config { margin-top: 20px; }
+    textarea {
+      width: 100%; min-height: 200px; padding: 10px; border-radius: 10px;
+      background: #0b0e1a; color: var(--text); border: 1px solid var(--border);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size: 13px;
+    }
+    .pill { display: inline-block; padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px; font-size: 12px; color: var(--muted); }
+    .right { margin-left: auto; }
+    .inline-note { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="row" style="gap:12px; align-items: flex-end;">
+      <div>
+        <h1>Skill Resource Calculator</h1>
+        <div class="sub">Pick your current level (1–10) for each skill. Each level maps to the <em>resources needed to max out</em> that skill. Totals update automatically.</div>
+      </div>
+      <span class="pill right">Client‑side only • Shareable link</span>
+    </header>
+
+    <!-- Controls -->
+    <div class="row" style="margin-top:8px; gap:8px;">
+      <button class="btn primary" id="copyLinkBtn" title="Copy a URL that encodes your current selections">Copy shareable link</button>
+      <button class="btn warn" id="resetBtn">Reset to level 1</button>
+      <button class="btn" id="fillMaxBtn">Set all to 10</button>
+      <span class="inline-note">Values are fully configurable—see “Edit values / skills” below.</span>
+    </div>
+
+    <!-- Skills grid -->
+    <section id="skillsGrid" class="grid" aria-live="polite"></section>
+
+    <!-- Results -->
+    <section class="result">
+      <div class="totals">
+        <div class="total-box">
+          <h3>Total resources to max all selected</h3>
+          <div class="total" id="grandTotal">0</div>
+        </div>
+        <div class="total-box">
+          <h3>Average per skill</h3>
+          <div class="total" id="avgTotal">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Skill</th>
+              <th>Level</th>
+              <th>Resource to max from this level</th>
+            </tr>
+          </thead>
+          <tbody id="breakdown"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Config -->
+    <details class="config card">
+      <summary style="cursor: pointer; font-weight: 600;">Edit values / skills (advanced)</summary>
+      <p class="muted">Edit the JSON below and click “Apply values”. Each skill has a 1–10 array mapping <strong>level → resources needed to max from that level</strong>. Index 0 is ignored so you can paste 11 numbers if that’s easier.</p>
+      <p class="muted">Example: If <code>Attack</code> at level 3 needs 70 resources to max, put <code>70</code> in position 3 of the array for <code>Attack</code>.</p>
+      <textarea id="configInput"></textarea>
+      <div class="row" style="margin-top:10px; gap:8px;">
+        <button class="btn primary" id="applyConfigBtn">Apply values</button>
+        <button class="btn danger" id="restoreDefaultsBtn">Restore defaults</button>
+      </div>
+      <p class="foot">Tip: You can also encode selections in the URL (the “copy shareable link” button). Anyone with the link can see your exact setup—no accounts needed.</p>
+    </details>
+
+    <footer class="foot">
+      Pure HTML/CSS/JS • No tracking • Works offline once loaded.
+    </footer>
+  </div>
+
+  <script>
+    /**
+     * HOW TO CUSTOMIZE
+     * ----------------
+     * 1) Put your real numbers in DEFAULT_VALUE_TABLE below.
+     *    Each skill maps 1..10 (level) -> resource to max from that level.
+     *    Index 0 is ignored for convenience.
+     * 2) (Optional) Use the config panel to paste your JSON at runtime.
+     * 3) Press the "Copy shareable link" button to share a URL that encodes the selected levels.
+     */
+
+    const DEFAULT_VALUE_TABLE = {
+      // Replace the placeholder arrays with your real numbers.
+      // Index 0 is ignored; positions 1..10 correspond to levels 1..10.
+      "Attack":  [0, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0],
+      "Defense": [0, 85, 75, 65, 55, 45, 36, 27, 18, 9, 0],
+      "Magic":   [0, 100, 88, 76, 64, 52, 40, 30, 22, 12, 0],
+      "Support": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0]
+    };
+
+    // --- State ---
+    let valueTable = structuredClone(DEFAULT_VALUE_TABLE);
+
+    // --- Utilities ---
+    const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+    function buildSkillsGrid() {
+      const grid = document.getElementById("skillsGrid");
+      grid.innerHTML = "";
+
+      Object.keys(valueTable).forEach((skill) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const label = document.createElement("label");
+        label.className = "skill-label";
+        const name = document.createElement("span");
+        name.textContent = skill;
+        const helper = document.createElement("span");
+        helper.className = "muted";
+        helper.textContent = "Pick current level";
+        label.append(name, helper);
+
+        const select = document.createElement("select");
+        select.name = slugify(skill);
+        select.setAttribute("aria-label", skill + ' level');
+        for (let lvl = 1; lvl <= 10; lvl++) {
+          const opt = document.createElement("option");
+          opt.value = String(valueFor(skill, lvl));
+          opt.dataset.level = String(lvl);
+          opt.textContent = String(lvl);
+          select.appendChild(opt);
+        }
+        select.addEventListener("change", () => {
+          renderBreakdown();
+          updateTotals();
+          // Keep URL in sync silently
+          updateQueryString(false);
+        });
+
+        card.append(label, select);
+        grid.appendChild(card);
+      });
+    }
+
+    function valueFor(skill, level) {
+      const arr = valueTable[skill] || [];
+      return Number(arr[level] ?? 0);
+    }
+
+    function getSelections() {
+      const selects = Array.from(document.querySelectorAll("#skillsGrid select"));
+      return selects.map((sel) => ({
+        key: sel.name,
+        label: Object.keys(valueTable).find(k => slugify(k) === sel.name) || sel.name,
+        level: Number(sel.selectedOptions[0]?.dataset.level || "1"),
+        value: Number(sel.value || "0")
+      }));
+    }
+
+    function renderBreakdown() {
+      const tbody = document.getElementById("breakdown");
+      tbody.innerHTML = "";
+      const selections = getSelections();
+      for (const s of selections) {
+        const tr = document.createElement("tr");
+        const tdSkill = document.createElement("td"); tdSkill.textContent = s.label;
+        const tdLvl = document.createElement("td"); tdLvl.textContent = s.level;
+        const tdVal = document.createElement("td"); tdVal.textContent = s.value.toLocaleString();
+        tr.append(tdSkill, tdLvl, tdVal);
+        tbody.appendChild(tr);
+      }
+    }
+
+    function updateTotals() {
+      const selections = getSelections();
+      const total = selections.reduce((sum, s) => sum + s.value, 0);
+      const avg = selections.length ? total / selections.length : 0;
+      document.getElementById("grandTotal").textContent = total.toLocaleString();
+      document.getElementById("avgTotal").textContent = Math.round(avg).toLocaleString();
+    }
+
+    function resetTo(level) {
+      document.querySelectorAll("#skillsGrid select").forEach((sel) => {
+        // find option with data-level == level
+        const opt = Array.from(sel.options).find(o => Number(o.dataset.level) === level);
+        if (opt) sel.value = opt.value;
+      });
+      renderBreakdown();
+      updateTotals();
+      updateQueryString(false);
+    }
+
+    // --- Shareable link (encodes levels) ---
+    function updateQueryString(push = false) {
+      const params = new URLSearchParams();
+      for (const [skill, arr] of Object.entries(valueTable)) {
+        const select = document.querySelector('select[name="'+slugify(skill)+'"]');
+        if (!select) continue;
+        const level = select.selectedOptions[0]?.dataset.level || "1";
+        params.set(slugify(skill), String(level));
+      }
+      const url = location.pathname + "?" + params.toString();
+      if (push) history.pushState({}, "", url); else history.replaceState({}, "", url);
+    }
+
+    function applyQueryString() {
+      const params = new URLSearchParams(location.search);
+      for (const [skill, arr] of Object.entries(valueTable)) {
+        const key = slugify(skill);
+        const lvl = Number(params.get(key));
+        if (!lvl) continue;
+        const select = document.querySelector('select[name="'+key+'"]');
+        if (!select) continue;
+        const opt = Array.from(select.options).find(o => Number(o.dataset.level) === lvl);
+        if (opt) select.value = opt.value;
+      }
+    }
+
+    // --- Config editor ---
+    function setConfigTextarea(json = null) {
+      const textarea = document.getElementById("configInput");
+      const shown = json ?? JSON.stringify(valueTable, null, 2);
+      textarea.value = shown;
+    }
+
+    function applyConfigFromTextarea() {
+      const textarea = document.getElementById("configInput");
+      try {
+        const parsed = JSON.parse(textarea.value);
+        // basic validation
+        if (!parsed || typeof parsed !== "object") throw new Error("Config must be an object");
+        for (const [k, arr] of Object.entries(parsed)) {
+          if (!Array.isArray(arr) || arr.length < 11) {
+            throw new Error("Each skill must be an array with 11 numbers (index 0 ignored, 1..10 used). Problem at: " + k);
+          }
+        }
+        valueTable = parsed;
+        buildSkillsGrid();
+        applyQueryString(); // attempt to re-apply levels if keys match
+        renderBreakdown();
+        updateTotals();
+        updateQueryString(false);
+      } catch (err) {
+        alert("Invalid JSON:\n" + err.message);
+      }
+    }
+
+    function restoreDefaults() {
+      valueTable = structuredClone(DEFAULT_VALUE_TABLE);
+      buildSkillsGrid();
+      applyQueryString();
+      renderBreakdown();
+      updateTotals();
+      updateQueryString(false);
+      setConfigTextarea();
+    }
+
+    // --- Clipboard ---
+    async function copyShareLink() {
+      updateQueryString(false);
+      const link = location.href;
+      try {
+        await navigator.clipboard.writeText(link);
+        const btn = document.getElementById("copyLinkBtn");
+        const old = btn.textContent;
+        btn.textContent = "Link copied!";
+        setTimeout(() => (btn.textContent = old), 1600);
+      } catch {
+        prompt("Copy link manually:", link);
+      }
+    }
+
+    // --- Init ---
+    document.getElementById("copyLinkBtn").addEventListener("click", copyShareLink);
+    document.getElementById("resetBtn").addEventListener("click", () => resetTo(1));
+    document.getElementById("fillMaxBtn").addEventListener("click", () => resetTo(10));
+    document.getElementById("applyConfigBtn").addEventListener("click", applyConfigFromTextarea);
+    document.getElementById("restoreDefaultsBtn").addEventListener("click", restoreDefaults);
+
+    buildSkillsGrid();
+    setConfigTextarea();
+    // Default all to level 1
+    resetTo(1);
+    // If the URL encodes levels, apply them
+    applyQueryString();
+    renderBreakdown();
+    updateTotals();
+    updateQueryString(false);
+  </script>
+</body>
+</html>

@@ -70,7 +70,7 @@
   </header>
 
   <div class="row" style="margin-top:8px; gap:8px;">
-    <button class="btn warn" id="resetBtn">Reset to level 0</button>
+    <button class="btn warn" id="resetBtn">Reset to 0</button>
     <button class="btn primary" id="toggleHighlightBtn">Toggle T11 Highlight</button>
   </div>
 
@@ -93,8 +93,7 @@
           <tr>
             <th>Skill</th>
             <th>Level</th>
-            <th>DE for T11 Troops</th>
-            <th>DE to Max Skill</th>
+            <th>Resource to max from this level</th>
           </tr>
         </thead>
         <tbody id="breakdown"></tbody>
@@ -102,37 +101,21 @@
     </div>
   </section>
 
-  <footer class="foot">Pure HTML/CSS/JS • No tracking • Works offline once loaded • Created by Dan ✨#523426080739.</footer>
+  <footer class="foot">Pure HTML/CSS/JS • No tracking • Works offline once loaded.</footer>
 </div>
 
 <script>
   // -------------------- Skill Values --------------------
   const valueTable = {
-    "Training Speed 1":  [0, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0],
-    "Relic HP": [0, 85, 75, 65, 55, 45, 36, 27, 18, 9, 0],
-    "Relic Attack":   [0, 100, 88, 76, 64, 52, 40, 30, 22, 12, 0],
-    "Soldier Assault 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Soldier Defense 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "March Size": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Hero Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Soldier Capacity 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Training Mastery": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Healing Speed": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Hero Assault 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Hero Defense 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Healing Boost": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Hero Assault 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Hero Defense 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Soldier Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-    "Hero Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-
-    
+    "Attack":  [0, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0],
+    "Defense": [0, 85, 75, 65, 55, 45, 36, 27, 18, 9, 0],
+    "Magic":   [0, 100, 88, 76, 64, 52, 40, 30, 22, 12, 0],
+    "Support": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0]
   };
 
-  // Skills required for T11 and their caps
   const T11_REQUIREMENTS = {
-    "Training Speed 1": 10,
-    "Relic HP": 8,
+    "Attack": 10,
+    "Defense": 8,
     "Magic": 7
   };
 
@@ -149,20 +132,19 @@
       const card = document.createElement("div"); 
       card.className="card";
 
-      // Highlight T11 if needed
       if(highlightOn && T11_REQUIREMENTS[skill]) card.classList.add("highlight");
 
       const label = document.createElement("label"); 
       label.className="skill-label";
       const name = document.createElement("span"); name.textContent = skill;
-      const helper = document.createElement("span"); helper.className="muted"; helper.textContent="Pick current level";
+      const helper = document.createElement("span"); helper.className="muted"; helper.textContent="Pick current level (0 = start)";
       label.append(name, helper);
 
       const select = document.createElement("select"); select.name=slugify(skill);
       select.setAttribute("aria-label", skill+' level');
 
       const maxLevel = valueTable[skill].length - 1;
-      for(let lvl=1; lvl<=maxLevel; lvl++){
+      for(let lvl=0; lvl<=maxLevel; lvl++){
         const opt = document.createElement("option");
         opt.value = String(valueFor(skill,lvl));
         opt.dataset.level = String(lvl);
@@ -181,7 +163,7 @@
       return {
         key: sel.name,
         label: Object.keys(valueTable).find(k=>slugify(k)===sel.name)||sel.name,
-        level: Number(sel.selectedOptions[0]?.dataset.level||"1"),
+        level: Number(sel.selectedOptions[0]?.dataset.level||"0"),
         value: Number(sel.value||"0")
       };
     });
@@ -217,23 +199,20 @@
   }
 
   // -------------------- Reset & URL --------------------
-  function resetTo(level = 0) { // default to 0 if no argument provided
-  document.querySelectorAll("#skillsGrid select").forEach(sel => {
-    const opt = Array.from(sel.options).find(o => Number(o.dataset.level) === level);
-    if (opt) sel.value = opt.value;
-  });
-  renderBreakdown();
-  updateTotals();
-  updateQueryString(false);
-}
-
+  function resetTo(level){
+    document.querySelectorAll("#skillsGrid select").forEach(sel=>{
+      const opt = Array.from(sel.options).find(o=>Number(o.dataset.level)===level);
+      if(opt) sel.value = opt.value;
+    });
+    renderBreakdown(); updateTotals(); updateQueryString(false);
+  }
 
   function updateQueryString(push=false){
     const params = new URLSearchParams();
     Object.keys(valueTable).forEach(skill=>{
       const sel = document.querySelector('select[name="'+slugify(skill)+'"]');
       if(!sel) return;
-      const lvl = sel.selectedOptions[0]?.dataset.level||"1";
+      const lvl = sel.selectedOptions[0]?.dataset.level||"0";
       params.set(slugify(skill), lvl);
     });
     const url = location.pathname + "?" + params.toString();
@@ -245,7 +224,7 @@
     Object.keys(valueTable).forEach(skill=>{
       const key = slugify(skill);
       const lvl = Number(params.get(key));
-      if(!lvl) return;
+      if(isNaN(lvl)) return;
       const sel = document.querySelector('select[name="'+key+'"]');
       if(!sel) return;
       const opt = Array.from(sel.options).find(o=>Number(o.dataset.level)===lvl);
@@ -261,10 +240,10 @@
     updateTotals();
   });
 
-  // -------------------- Init --------------------
-  document.getElementById("resetBtn").addEventListener("click", ()=>resetTo(1));
+  document.getElementById("resetBtn").addEventListener("click", ()=>resetTo(0));
 
-  buildSkillsGrid(); resetTo(1); applyQueryString(); renderBreakdown(); updateTotals(); updateQueryString(false);
+  // -------------------- Init --------------------
+  buildSkillsGrid(); resetTo(0); applyQueryString(); renderBreakdown(); updateTotals(); updateQueryString(false);
 </script>
 </body>
 </html>

@@ -73,7 +73,6 @@
 
   <div class="row" style="margin-top:8px; gap:8px;">
     <button class="btn warn" id="resetBtn">Reset Levels</button>
-    <button class="btn primary" id="toggleHighlightBtn">Toggle T11 Highlight</button>
     <button class="btn" id="copyLinkBtn">Copy Results Link</button>
   </div>
 
@@ -305,13 +304,6 @@ function updateTotals() {
       if(opt) sel.value = opt.value;
     });
   }
-
-  // -------------------- Highlight Toggle --------------------
-  document.getElementById("toggleHighlightBtn").addEventListener("click", ()=>{
-    highlightOn = !highlightOn;
-    buildSkillsGrid(); 
-    updateTotals();
-  });
 
   // -------------------- Copy Link --------------------
   document.getElementById("copyLinkBtn").addEventListener("click", ()=>{

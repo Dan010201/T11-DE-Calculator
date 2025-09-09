@@ -70,7 +70,7 @@
   </header>
 
   <div class="row" style="margin-top:8px; gap:8px;">
-    <button class="btn warn" id="resetBtn">Reset to level 1</button>
+    <button class="btn warn" id="resetBtn">Reset to level 0</button>
     <button class="btn primary" id="toggleHighlightBtn">Toggle T11 Highlight</button>
   </div>
 
@@ -93,7 +93,8 @@
           <tr>
             <th>Skill</th>
             <th>Level</th>
-            <th>Resource to max from this level</th>
+            <th>DE for T11 Troops</th>
+            <th>DE to Max Skill</th>
           </tr>
         </thead>
         <tbody id="breakdown"></tbody>
@@ -101,16 +102,31 @@
     </div>
   </section>
 
-  <footer class="foot">Pure HTML/CSS/JS • No tracking • Works offline once loaded.</footer>
+  <footer class="foot">Pure HTML/CSS/JS • No tracking • Works offline once loaded • Created by Dan ✨#523426080739.</footer>
 </div>
 
 <script>
   // -------------------- Skill Values --------------------
   const valueTable = {
-    "Attack":  [0, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0],
-    "Defense": [0, 85, 75, 65, 55, 45, 36, 27, 18, 9, 0],
-    "Magic":   [0, 100, 88, 76, 64, 52, 40, 30, 22, 12, 0],
-    "Support": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0]
+    "Training Speed 1":  [0, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0],
+    "Relic HP": [0, 85, 75, 65, 55, 45, 36, 27, 18, 9, 0],
+    "Relic Attack":   [0, 100, 88, 76, 64, 52, 40, 30, 22, 12, 0],
+    "Soldier Assault 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Soldier Defense 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "March Size": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Hero Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Soldier Capacity 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Training Mastery": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Healing Speed": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Hero Assault 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Hero Defense 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Healing Boost": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Hero Assault 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Hero Defense 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Soldier Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+    "Hero Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
+
+    
   };
 
   // Skills required for T11 and their caps
@@ -201,13 +217,16 @@
   }
 
   // -------------------- Reset & URL --------------------
-  function resetTo(level){
-    document.querySelectorAll("#skillsGrid select").forEach(sel=>{
-      const opt = Array.from(sel.options).find(o=>Number(o.dataset.level)===level);
-      if(opt) sel.value = opt.value;
-    });
-    renderBreakdown(); updateTotals(); updateQueryString(false);
-  }
+  function resetTo(level = 0) { // default to 0 if no argument provided
+  document.querySelectorAll("#skillsGrid select").forEach(sel => {
+    const opt = Array.from(sel.options).find(o => Number(o.dataset.level) === level);
+    if (opt) sel.value = opt.value;
+  });
+  renderBreakdown();
+  updateTotals();
+  updateQueryString(false);
+}
+
 
   function updateQueryString(push=false){
     const params = new URLSearchParams();

@@ -208,46 +208,50 @@
   }
 
   // -------------------- Totals & Breakdown --------------------
-  function updateTotals() {
-    const selections = getSelections();
+function updateTotals() {
+  const selections = getSelections();
 
-    let t11Total = 0;
-    let brilTotal = 0;
-    let grandTotal = 0;
+  let t11Total = 0;
+  let brilTotal = 0;
+  let grandTotal = 0;
 
-    const tbody = document.getElementById("breakdown");
-    tbody.innerHTML = "";
+  const tbody = document.getElementById("breakdown");
+  tbody.innerHTML = "";
 
-    selections.forEach(s => {
-      const arr = valueTable[s.label];
-      const maxLevel = arr.length - 1;
-      const t11Req = T11_REQUIREMENTS[s.label] || 0;
-      const t11Target = Math.min(t11Req, maxLevel);
+  selections.forEach(s => {
+    const arr = valueTable[s.label];
+    const maxLevel = arr.length - 1;
+    const t11Req = T11_REQUIREMENTS[s.label] || 0;
+    const t11Target = Math.min(t11Req, maxLevel);
 
-      // DE needed for T11
-      let t11DE = 0;
-      for(let lvl = s.level + 1; lvl <= t11Target; lvl++) t11DE += arr[lvl] || 0;
+    // DE already completed
+    let completedDE = 0;
+    for(let lvl = 1; lvl <= s.level; lvl++) completedDE += arr[lvl] || 0;
 
-      // DE needed for Max
-      let maxDE = 0;
-      for(let lvl = s.level + 1; lvl <= maxLevel; lvl++) maxDE += arr[lvl] || 0;
+    // DE to reach T11 requirement
+    let t11DE = 0;
+    for(let lvl = s.level + 1; lvl <= t11Target; lvl++) t11DE += arr[lvl] || 0;
 
-      if(s.label === "Brilliance Institute") brilTotal += maxDE;
-      t11Total += t11DE;
-      grandTotal += maxDE;
+    // DE to reach max
+    let maxDE = 0;
+    for(let lvl = s.level + 1; lvl <= maxLevel; lvl++) maxDE += arr[lvl] || 0;
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${s.label}</td>
-                      <td>${s.level}</td>
-                      <td>${t11DE.toLocaleString()}</td>
-                      <td>${maxDE.toLocaleString()}</td>`;
-      tbody.appendChild(tr);
-    });
+    if(s.label === "Brilliance Institute") brilTotal += maxDE;
+    t11Total += t11DE;
+    grandTotal += maxDE;
 
-    document.getElementById("T11Total").textContent = t11Total.toLocaleString();
-    document.getElementById("BrilTotal").textContent = brilTotal.toLocaleString();
-    document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
-  }
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${s.label}</td>
+                    <td>${s.level}</td>
+                    <td>${t11DE.toLocaleString()}</td>
+                    <td>${maxDE.toLocaleString()}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("T11Total").textContent = t11Total.toLocaleString();
+  document.getElementById("BrilTotal").textContent = brilTotal.toLocaleString();
+  document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
+}
 
   // -------------------- Reset & URL --------------------
   function resetTo(level = 0) {

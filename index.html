@@ -254,9 +254,11 @@ function updateTotals() {
       grandTotal += maxDE; // and to max total
     }
 
+    // 🔥 Add T11 required level column here
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${s.label}</td>
                     <td>${s.level}</td>
+                    <td>${t11Req > 0 ? t11Req : "-"}</td>
                     <td>${t11DE.toLocaleString()}</td>
                     <td>${maxDE.toLocaleString()}</td>`;
     tbody.appendChild(tr);
@@ -267,6 +269,7 @@ function updateTotals() {
   document.getElementById("T11Total").textContent = t11Total.toLocaleString();
   document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
 }
+
 
   // -------------------- Reset & URL --------------------
   function resetTo(level = 0) {

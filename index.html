@@ -120,28 +120,20 @@
   const valueTable = {
     "Brilliance Institute":  [0, 32, 32, 32, 32, 33, 32, 57, 58, 58, 57, 57, 70, 70, 70, 67],
     "Training Speed 1":  [0, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4],
-    
     "Relic HP": [0, 8, 10, 11, 13, 16, 19, 23, 27, 32, 38],
     "Relic Attack":   [0, 8, 10, 11, 13, 16, 19, 23, 27, 32, 38],
-    
     "Soldier Assault 1": [0, 12, 14, 16, 20, 23, 28, 34, 40, 48, 57],
     "Soldier Defense 1": [0, 12, 14, 16, 20, 23, 28, 34, 40, 48, 57],
-    
     "March Size": [0, 16, 19, 22, 26, 31, 37, 45, 54, 64, 76],
     "Hero Level 1": [0, 62, 131],
-    
     "Soldier Capacity 1": [0, 26, 34, 47, 71, 112],
     "Training Mastery": [0, 26, 34, 47, 71, 112],
-    
     "Healing Speed": [0, 44, 57, 78, 117, 186],
     "Hero Assault 1": [0, 46, 55, 64, 78, 92, 110, 133, 160, 192, 228],
     "Hero Defense 1": [0, 46, 55, 64, 78, 92, 110, 133, 160, 192, 228],
-    
     "Healing Boost": [0, 70],
-    
     "Hero Assault 2": [0, 57, 69, 80, 97, 114, 137, 166, 200, 239, 285],
     "Hero Defense 2": [0, 57, 69, 80, 97, 114, 137, 166, 200, 239, 285],
-    
     "Soldier Level": [0, 288],
     "Hero Level 2": [0, 189, 321, 642]
   };
@@ -175,7 +167,6 @@
       const card = document.createElement("div"); 
       card.className="card";
 
-      // Highlight T11 if needed, Brilliance Institute orange
       if(highlightOn && T11_REQUIREMENTS[skill]){
         if(skill === "Brilliance Institute") card.classList.add("highlight-brilliance");
         else card.classList.add("highlight");
@@ -199,7 +190,7 @@
         select.appendChild(opt);
       }
 
-      select.addEventListener("change", ()=>{ renderBreakdown(); updateTotals(); updateQueryString(false); });
+      select.addEventListener("change", ()=>{ updateTotals(); });
       card.append(label, select); grid.appendChild(card);
     });
   }
@@ -216,38 +207,46 @@
     });
   }
 
-  function renderBreakdown() {
-    const tbody = document.getElementById("breakdown"); tbody.innerHTML = "";
-    getSelections().forEach(s=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${s.label}</td><td>${s.level}</td><td>${s.value.toLocaleString()}</td>`;
-      tbody.appendChild(tr);
-    });
-  }
-
-  // -------------------- Totals --------------------
+  // -------------------- Totals & Breakdown --------------------
   function updateTotals() {
     const selections = getSelections();
-    const grandTotal = selections.reduce((sum,s)=>sum+s.value,0);
-    document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
 
     let t11Total = 0;
     let brilTotal = 0;
-    selections.forEach(s=>{
-      const required = T11_REQUIREMENTS[s.label];
+    let grandTotal = 0;
+
+    const tbody = document.getElementById("breakdown");
+    tbody.innerHTML = "";
+
+    selections.forEach(s => {
       const arr = valueTable[s.label];
-      if(s.label === "Brilliance Institute"){
-        for(let lvl=s.level+1; lvl<=arr.length-1; lvl++) brilTotal += arr[lvl] || 0;
-      }
-      if(required){
-        const start = s.level < required ? s.level + 1 : 0;
-        for(let lvl=start; lvl<=required; lvl++){
-          t11Total += arr[lvl] || 0;
-        }
-      }
+      const maxLevel = arr.length - 1;
+      const t11Req = T11_REQUIREMENTS[s.label] || 0;
+      const t11Target = Math.min(t11Req, maxLevel);
+
+      // DE needed for T11
+      let t11DE = 0;
+      for(let lvl = s.level + 1; lvl <= t11Target; lvl++) t11DE += arr[lvl] || 0;
+
+      // DE needed for Max
+      let maxDE = 0;
+      for(let lvl = s.level + 1; lvl <= maxLevel; lvl++) maxDE += arr[lvl] || 0;
+
+      if(s.label === "Brilliance Institute") brilTotal += maxDE;
+      t11Total += t11DE;
+      grandTotal += maxDE;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${s.label}</td>
+                      <td>${s.level}</td>
+                      <td>${t11DE.toLocaleString()}</td>
+                      <td>${maxDE.toLocaleString()}</td>`;
+      tbody.appendChild(tr);
     });
+
     document.getElementById("T11Total").textContent = t11Total.toLocaleString();
     document.getElementById("BrilTotal").textContent = brilTotal.toLocaleString();
+    document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
   }
 
   // -------------------- Reset & URL --------------------
@@ -256,7 +255,6 @@
       const opt = Array.from(sel.options).find(o => Number(o.dataset.level) === level);
       if (opt) sel.value = opt.value;
     });
-    renderBreakdown();
     updateTotals();
     updateQueryString(false);
   }
@@ -290,7 +288,6 @@
   document.getElementById("toggleHighlightBtn").addEventListener("click", ()=>{
     highlightOn = !highlightOn;
     buildSkillsGrid(); 
-    renderBreakdown(); 
     updateTotals();
   });
 
@@ -302,7 +299,7 @@
   // -------------------- Init --------------------
   document.getElementById("resetBtn").addEventListener("click", ()=>resetTo(0));
 
-  buildSkillsGrid(); resetTo(0); applyQueryString(); renderBreakdown(); updateTotals(); updateQueryString(false);
+  buildSkillsGrid(); resetTo(0); applyQueryString(); updateTotals(); updateQueryString(false);
 </script>
 </body>
 </html>

@@ -15,7 +15,7 @@
     --warn: #fbbf24;
     --danger: #fb7185;
     --border: #273043;
-    --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
@@ -28,43 +28,39 @@
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     line-height: 1.45;
   }
-  h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: .2px; }
-  .sub { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
-  .wrap { max-width: 980px; margin: 0 auto; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 18px 0 26px; }
-  .card { background: linear-gradient(180deg, rgba(255,255,255,.02), transparent 60%), var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); transition: all 0.2s ease; }
-  .highlight { border: 2px solid var(--accent); box-shadow: 0 0 10px var(--accent); }
-  .skill-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-  .skill-label span { font-weight: 600; }
-  .muted { color: var(--muted); font-size: 12px; }
-  select {
-    width: 100%; padding: 10px 12px; border-radius: 10px;
-    background: #0d1020; color: var(--text);
-    border: 1px solid var(--border); outline: none;
-  }
-  select:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(138,180,255,.25); }
-  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .btn { appearance: none; border: 1px solid var(--border); background: #0b0e1a; color: var(--text); padding: 10px 14px; border-radius: 10px; cursor: pointer; box-shadow: var(--shadow); }
-  .btn:hover { border-color: var(--accent-2); }
+  h1 { margin:0 0 6px; font-size:28px; letter-spacing:.2px; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:18px; }
+  .wrap { max-width:980px; margin:0 auto; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:14px; margin:18px 0 26px; }
+  .card { background:linear-gradient(180deg, rgba(255,255,255,.02), transparent 60%), var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; box-shadow:var(--shadow); transition: all 0.2s ease; }
+  .highlight { border:2px solid var(--accent); box-shadow:0 0 10px var(--accent); }
+  .skill-label { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .skill-label span { font-weight:600; }
+  .muted { color:var(--muted); font-size:12px; }
+  select { width:100%; padding:10px 12px; border-radius:10px; background:#0d1020; color:var(--text); border:1px solid var(--border); outline:none; }
+  select:focus { border-color:var(--accent-2); box-shadow:0 0 0 3px rgba(138,180,255,.25); }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .btn { appearance:none; border:1px solid var(--border); background:#0b0e1a; color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; box-shadow:var(--shadow); }
+  .btn:hover { border-color:var(--accent-2); }
   .btn.primary { background: linear-gradient(180deg, rgba(110,231,183,.2), transparent 40%), #0c1514; border-color: rgba(110,231,183,.35); }
   .btn.warn { background: linear-gradient(180deg, rgba(251,191,36,.22), transparent 40%), #161309; border-color: rgba(251,191,36,.35); }
-  .result { display: grid; gap: 12px; grid-template-columns: 1fr; margin-top: 8px; }
-  .totals { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 14px; }
-  .total-box { padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: #0b0f1d; }
-  .total-box h3 { margin: 0 0 6px; font-size: 16px; color: var(--muted); }
-  .total { font-size: 22px; font-weight: 700; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
-  th { color: var(--muted); font-weight: 600; font-size: 13px; letter-spacing: .3px; }
-  .foot { margin-top: 18px; color: var(--muted); font-size: 12px; }
+  .result { display:grid; gap:12px; grid-template-columns:1fr; margin-top:8px; }
+  .totals { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+  .total-box { padding:14px; border-radius:12px; border:1px solid var(--border); background:#0b0f1d; }
+  .total-box h3 { margin:0 0 6px; font-size:16px; color:var(--muted); }
+  .total { font-size:22px; font-weight:700; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { padding:10px; border-bottom:1px solid var(--border); text-align:left; }
+  th { color:var(--muted); font-weight:600; font-size:13px; letter-spacing:.3px; }
+  .foot { margin-top:18px; color:var(--muted); font-size:12px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="row" style="gap:12px; align-items: flex-end;">
+  <header class="row" style="gap:12px; align-items:flex-end;">
     <div>
       <h1>DE Cost Calculator</h1>
-      <div class="sub">Pick your current research level for each step. Skills needed for T11 are highlighted dynamically.</div>
+      <div class="sub">Pick your current research level for each step. Skills needed for T11 are highlighted.</div>
     </div>
   </header>
 
@@ -72,8 +68,10 @@
     <button class="btn warn" id="resetBtn">Reset to level 0</button>
   </div>
 
+  <!-- Skills Grid -->
   <section id="skillsGrid" class="grid" aria-live="polite"></section>
 
+  <!-- Totals -->
   <section class="result">
     <div class="totals">
       <div class="total-box">
@@ -100,132 +98,108 @@
     </div>
   </section>
 
-  <footer class="foot">Pure HTML/CSS/JS • No tracking • Works offline once loaded • Created by Dan ✨#523426080739.</footer>
+  <footer class="foot">Pure HTML/CSS/JS • No tracking • Works offline once loaded.</footer>
 </div>
 
 <script>
-const valueTable = {
-  "Training Speed 1":  [0, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0],
-  "Relic HP": [0, 85, 75, 65, 55, 45, 36, 27, 18, 9, 0],
-  "Relic Attack":   [0, 100, 88, 76, 64, 52, 40, 30, 22, 12, 0],
-  "Soldier Assault 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Soldier Defense 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "March Size": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Hero Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Soldier Capacity 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Training Mastery": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Healing Speed": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Hero Assault 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Hero Defense 1": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Healing Boost": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Hero Assault 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Hero Defense 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Soldier Level": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0],
-  "Hero Level 2": [0, 70, 62, 54, 46, 38, 30, 22, 14, 6, 0]
-};
+  const valueTable = {
+    "Training Speed 1":  [0,90,80,70,60,50,40,30,20,10,0],
+    "Relic HP": [0,85,75,65,55,45,36,27,18,9,0],
+    "Relic Attack": [0,100,88,76,64,52,40,30,22,12,0],
+    "Soldier Assault 1": [0,70,62,54,46,38,30,22,14,6,0],
+    "Soldier Defense 1": [0,70,62,54,46,38,30,22,14,6,0],
+    "March Size": [0,70,62,54,46,38,30,22,14,6,0]
+  };
 
-const T11_REQUIREMENTS = {
-  "Training Speed 1": 10,
-  "Relic HP": 8,
-  "Relic Attack": 7
-};
+  // Skills required for T11 and their caps
+  const T11_REQUIREMENTS = {
+    "Training Speed 1": 10,
+    "Relic HP": 8,
+    "Relic Attack": 7
+  };
 
-let highlightOn = true;
-const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+  const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-function valueFor(skill, level){ return Number(valueTable[skill][level] || 0); }
+  // Build skill grid once
+  function buildSkillsGrid() {
+    const grid = document.getElementById("skillsGrid");
+    grid.innerHTML = "";
 
-function buildSkillsGrid(){
-  const grid = document.getElementById("skillsGrid");
-  grid.innerHTML = "";
-  Object.keys(valueTable).forEach(skill=>{
-    const card = document.createElement("div"); card.className="card";
-    const currentLevel = getSelections().find(s=>s.label===skill)?.level || 0;
+    Object.keys(valueTable).forEach(skill => {
+      const card = document.createElement("div");
+      card.className = "card";
+      if(T11_REQUIREMENTS[skill]) card.classList.add("highlight");
 
-    if(highlightOn && T11_REQUIREMENTS[skill] && currentLevel < T11_REQUIREMENTS[skill]){
-      card.classList.add("highlight");
-    }
+      const label = document.createElement("label"); label.className = "skill-label";
+      const name = document.createElement("span"); name.textContent = skill;
+      const helper = document.createElement("span"); helper.className="muted"; helper.textContent="Pick current level";
+      label.append(name, helper);
 
-    const label = document.createElement("label"); label.className="skill-label";
-    const name = document.createElement("span"); name.textContent = skill;
-    const helper = document.createElement("span"); helper.className="muted"; helper.textContent="Pick current level";
-    label.append(name, helper);
+      const select = document.createElement("select"); select.name = slugify(skill); select.setAttribute("aria-label", skill + " level");
+      const maxLevel = valueTable[skill].length - 1;
+      for(let lvl=0; lvl<=maxLevel; lvl++){
+        const opt = document.createElement("option");
+        opt.value = valueTable[skill][lvl];
+        opt.dataset.level = lvl;
+        opt.textContent = lvl;
+        select.appendChild(opt);
+      }
 
-    const select = document.createElement("select"); select.name=slugify(skill);
-    select.setAttribute("aria-label", skill+' level');
+      select.addEventListener("change", updateTotals);
 
-    const maxLevel = valueTable[skill].length - 1;
-    for(let lvl=0; lvl<=maxLevel; lvl++){
-      const opt=document.createElement("option");
-      opt.value = String(valueFor(skill,lvl));
-      opt.dataset.level = String(lvl);
-      opt.textContent = String(lvl);
-      if(lvl===currentLevel) opt.selected=true;
-      select.appendChild(opt);
-    }
+      card.append(label, select);
+      grid.appendChild(card);
+    });
+  }
 
-    select.addEventListener("change", ()=>{
-      renderBreakdown();
-      updateTotals();
-      buildSkillsGrid(); // update highlights dynamically
+  function getSelections() {
+    return Array.from(document.querySelectorAll("#skillsGrid select")).map(sel=>{
+      const level = Number(sel.selectedOptions[0]?.dataset.level || "0");
+      return {
+        key: sel.name,
+        label: Object.keys(valueTable).find(k => slugify(k) === sel.name) || sel.name,
+        level,
+        value: valueTable[Object.keys(valueTable).find(k => slugify(k) === sel.name)][level]
+      };
+    });
+  }
+
+  function updateTotals() {
+    const selections = getSelections();
+    let totalMax = 0, totalT11 = 0;
+    selections.forEach(s => {
+      const maxVal = valueTable[s.label][valueTable[s.label].length - 1];
+      totalMax += maxVal;
+      if(T11_REQUIREMENTS[s.label]){
+        const reqLevel = Math.min(T11_REQUIREMENTS[s.label], valueTable[s.label].length - 1);
+        totalT11 += valueTable[s.label][reqLevel] - valueTable[s.label][s.level];
+      }
     });
 
-    card.append(label, select);
-    grid.appendChild(card);
-  });
-}
+    document.getElementById("grandTotal").textContent = totalMax.toLocaleString();
+    document.getElementById("T11Total").textContent = totalT11.toLocaleString();
 
-function getSelections(){
-  return Array.from(document.querySelectorAll("#skillsGrid select")).map(sel=>{
-    return {
-      key: sel.name,
-      label: Object.keys(valueTable).find(k=>slugify(k)===sel.name)||sel.name,
-      level: Number(sel.selectedOptions[0]?.dataset.level||"0"),
-      value: Number(sel.value||"0")
-    };
-  });
-}
+    const tbody = document.getElementById("breakdown");
+    tbody.innerHTML = "";
+    selections.forEach(s => {
+      const tr = document.createElement("tr");
+      const reqLevel = T11_REQUIREMENTS[s.label] || valueTable[s.label].length - 1;
+      tr.innerHTML = `<td>${s.label}</td><td>${s.level}</td><td>${reqLevel - s.level}</td><td>${valueTable[s.label][valueTable[s.label].length-1]-s.level}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
 
-function renderBreakdown(){
-  const tbody=document.getElementById("breakdown"); tbody.innerHTML="";
-  getSelections().forEach(s=>{
-    const t11Value = (T11_REQUIREMENTS[s.label] && s.level < T11_REQUIREMENTS[s.label])
-      ? valueTable[s.label].slice(s.level+1, T11_REQUIREMENTS[s.label]+1).reduce((a,b)=>a+b,0)
-      : 0;
-    const maxValue = valueTable[s.label].slice(s.level+1).reduce((a,b)=>a+b,0);
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${s.label}</td><td>${s.level}</td><td>${t11Value.toLocaleString()}</td><td>${maxValue.toLocaleString()}</td>`;
-    tbody.appendChild(tr);
-  });
-}
+  function resetTo(level=0){
+    document.querySelectorAll("#skillsGrid select").forEach(sel => {
+      const opt = Array.from(sel.options).find(o=>Number(o.dataset.level)===level);
+      if(opt) sel.value = opt.value;
+    });
+    updateTotals();
+  }
 
-function updateTotals(){
-  const selections = getSelections();
-  const grandTotal = selections.reduce((sum,s)=>sum+s.value,0);
-  document.getElementById("grandTotal").textContent = grandTotal.toLocaleString();
-
-  let t11Total = 0;
-  selections.forEach(s=>{
-    if(T11_REQUIREMENTS[s.label] && s.level < T11_REQUIREMENTS[s.label]){
-      t11Total += valueTable[s.label].slice(s.level+1, T11_REQUIREMENTS[s.label]+1).reduce((a,b)=>a+b,0);
-    }
-  });
-  document.getElementById("T11Total").textContent = t11Total.toLocaleString();
-}
-
-function resetTo(level=0){
-  document.querySelectorAll("#skillsGrid select").forEach(sel=>{
-    const opt = Array.from(sel.options).find(o=>Number(o.dataset.level)===level);
-    if(opt) sel.value = opt.value;
-  });
-  renderBreakdown(); updateTotals(); buildSkillsGrid();
-}
-
-document.getElementById("resetBtn").addEventListener("click", ()=>resetTo(0));
-
-buildSkillsGrid();
-renderBreakdown();
-updateTotals();
+  // Init
+  buildSkillsGrid();
+  resetTo(0);
 </script>
 </body>
 </html>
